@@ -26,7 +26,7 @@ class GildedRose(val items: List<Item>) {
         newShinyItems.forEachIndexed { i, newShinyItem ->
             items[i].quality = newShinyItem.quality.value
             if (newShinyItem.sellingRequirement is SellIn) {
-                items[i].sellIn = (newShinyItem.sellingRequirement as SellIn).value
+                items[i].sellIn = (newShinyItem.sellingRequirement as SellIn).numberOfDays
             }
         }
     }

@@ -29,7 +29,7 @@ sealed interface Item {
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
         }
 
-        override fun toString() = "${name.value} / sell in ${sellingRequirement.value} / quality of ${quality.value}"
+        override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 
     data class AgedBrie(override val sellingRequirement: SellIn, override val quality: ImprovesWithAgeQuality) : Item {
@@ -41,7 +41,7 @@ sealed interface Item {
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
         }
 
-        override fun toString() = "${name.value} / sell in ${sellingRequirement.value} / quality of ${quality.value}"
+        override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 
     data class BackstagePass(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: BackstagePassQuality) : Item {
@@ -51,7 +51,7 @@ sealed interface Item {
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
         }
 
-        override fun toString() = "${name.value} / sell in ${sellingRequirement.value} / quality of ${quality.value}"
+        override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 
     data class Conjured(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: ConjuredQuality) : Item {
@@ -61,26 +61,28 @@ sealed interface Item {
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
         }
 
-        override fun toString() = "${name.value} / sell in ${sellingRequirement.value} / quality of ${quality.value}"
+        override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 
     data class Sulfuras(override val name: ItemName) : Item {
         override val sellingRequirement = NeverHasToBeSold
         override val quality: Quality = SulfurasQuality
         override fun updateQuality(): Item = this
-        override fun toString() = "${name.value} / ${sellingRequirement::class.simpleName} / quality of ${quality.value}"
+        override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 }
 
-private fun SellIn.decrease() = copy(value = value.dec())
-private fun SellIn.isOverdue() = value < 0
+private fun itemToString(name: ItemName, sellingRequirement: SellingRequirement, quality: Quality) = "${name.value} / sell in ${if (sellingRequirement is SellIn) sellingRequirement.numberOfDays else sellingRequirement::class.simpleName} / quality of ${quality.value}"
+
+private fun SellIn.decrease() = copy(numberOfDays = numberOfDays.dec())
+private fun SellIn.isOverdue() = numberOfDays < 0
 
 private fun twiceAsFastIfOverdue(sellIn: SellIn) = if (sellIn.isOverdue()) 2 else 1
 private fun DegradesWithAgeQuality.decrease(sellIn: SellIn) = copy(value = value.minus(twiceAsFastIfOverdue(sellIn)).coerceAtLeast(WORST_QUALITY))
 private fun ConjuredQuality.decrease(sellIn: SellIn) = copy(value = value.minus(twiceAsFastIfOverdue(sellIn).times(2)).coerceAtLeast(WORST_QUALITY))
 private fun ImprovesWithAgeQuality.increase(sellIn: SellIn) = copy(value = value.plus(twiceAsFastIfOverdue(sellIn)).coerceAtMost(BEST_QUALITY))
 private fun BackstagePassQuality.update(sellIn: SellIn): BackstagePassQuality {
-    val numberOfDaysLeft = sellIn.value
+    val numberOfDaysLeft = sellIn.numberOfDays
     val newQualityValue = when {
         numberOfDaysLeft < 0 -> 0
         numberOfDaysLeft < 5 -> value.plus(3)
