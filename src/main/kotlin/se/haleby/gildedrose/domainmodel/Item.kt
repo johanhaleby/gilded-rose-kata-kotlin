@@ -20,10 +20,10 @@ sealed interface Item {
     val sellingRequirement: SellingRequirement
     val quality: Quality
 
-    fun newDay(): Item
+    fun updateQuality(): Item
 
     data class RegularItem(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: DegradesWithAgeQuality) : Item {
-        override fun newDay(): Item {
+        override fun updateQuality(): Item {
             val numberOfDaysLeftToSell = sellingRequirement.decrease()
             val newQuality = quality.decrease(numberOfDaysLeftToSell)
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
@@ -35,7 +35,7 @@ sealed interface Item {
     data class AgedBrie(override val sellingRequirement: SellIn, override val quality: ImprovesWithAgeQuality) : Item {
         override val name: ItemName = ItemName("Aged Brie")
 
-        override fun newDay(): Item {
+        override fun updateQuality(): Item {
             val numberOfDaysLeftToSell = sellingRequirement.decrease()
             val newQuality = quality.increase(numberOfDaysLeftToSell)
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
@@ -45,7 +45,7 @@ sealed interface Item {
     }
 
     data class BackstagePass(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: BackstagePassQuality) : Item {
-        override fun newDay(): Item {
+        override fun updateQuality(): Item {
             val numberOfDaysLeftToSell = sellingRequirement.decrease()
             val newQuality = quality.update(numberOfDaysLeftToSell)
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
@@ -55,7 +55,7 @@ sealed interface Item {
     }
 
     data class Conjured(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: ConjuredQuality) : Item {
-        override fun newDay(): Item {
+        override fun updateQuality(): Item {
             val numberOfDaysLeftToSell = sellingRequirement.decrease()
             val newQuality = quality.decrease(numberOfDaysLeftToSell)
             return copy(sellingRequirement = numberOfDaysLeftToSell, quality = newQuality)
@@ -67,12 +67,12 @@ sealed interface Item {
     data class Sulfuras(override val name: ItemName) : Item {
         override val sellingRequirement = NeverHasToBeSold
         override val quality: Quality = SulfurasQuality
-        override fun newDay(): Item = this
+        override fun updateQuality(): Item = this
         override fun toString() = "${name.value} / ${sellingRequirement::class.simpleName} / quality of ${quality.value}"
     }
 }
 
-private fun SellIn.decrease() = copy(value = value.minus(1))
+private fun SellIn.decrease() = copy(value = value.dec())
 private fun SellIn.isOverdue() = value < 0
 
 private fun twiceAsFastIfOverdue(sellIn: SellIn) = if (sellIn.isOverdue()) 2 else 1
@@ -83,9 +83,9 @@ private fun BackstagePassQuality.update(sellIn: SellIn): BackstagePassQuality {
     val numberOfDaysLeft = sellIn.value
     val newQualityValue = when {
         numberOfDaysLeft < 0 -> 0
-        numberOfDaysLeft < 5 -> value.plus(2)
+        numberOfDaysLeft < 5 -> value.plus(3)
         numberOfDaysLeft < 10 -> value.plus(2)
         else -> value.inc()
     }
-    return copy(value = newQualityValue)
+    return copy(value = newQualityValue.coerceAtMost(BEST_QUALITY))
 }

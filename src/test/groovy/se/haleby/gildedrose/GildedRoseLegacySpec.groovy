@@ -1,19 +1,17 @@
 package se.haleby.gildedrose
 
+
 import spock.lang.Specification
 
-import static se.haleby.gildedrose.ItemNames.AGED_BRIE
-import static se.haleby.gildedrose.ItemNames.BACKSTAGE_PASS
-import static se.haleby.gildedrose.ItemNames.CONJURED
-import static se.haleby.gildedrose.ItemNames.SULFURAS
+import static se.haleby.gildedrose.ItemNames.*
 
-
-class GildedRoseSpec extends Specification {
+class GildedRoseLegacySpec extends Specification {
 
     static final String AN_ITEM = "An item"
     static final int GOOD_PRODUCT = 15
     static final int EXPIRED_PRODUCT = -1
     static final int TOP_QUALITY_VALUE = 50
+    static final int SULFURAS_QUALITY_VALUE = 80
 
 
     def "not increase the quality of an aged brie or a backstage pass more than fifty"() {
@@ -75,18 +73,17 @@ class GildedRoseSpec extends Specification {
            -1                     || 0
     }
 
-
     def "not decrease the quality of sulfuras"() {
         given:
-            Item sulfuras = new Item(SULFURAS, GOOD_PRODUCT, 1)
-            Item expiredSulfuras = new Item(SULFURAS, EXPIRED_PRODUCT, 1)
+            Item sulfuras = new Item(SULFURAS, GOOD_PRODUCT, SULFURAS_QUALITY_VALUE)
+            Item expiredSulfuras = new Item(SULFURAS, EXPIRED_PRODUCT, SULFURAS_QUALITY_VALUE)
 
         when:
             new GildedRose([sulfuras]).updateQuality()
 
         then:
-            sulfuras.quality == 1
-            expiredSulfuras.quality == 1
+            sulfuras.quality == SULFURAS_QUALITY_VALUE
+            expiredSulfuras.quality == SULFURAS_QUALITY_VALUE
     }
 
     def "not decrease the sell in value of sulfuras"() {

@@ -23,7 +23,7 @@ fun main() {
 
     (1..20).fold(GildedRose(items)) { gildedRose, day ->
         println("---- Day #$day ----")
-        gildedRose.newDay()
+        gildedRose.updateQuality()
             .also { updatedGlidedRose ->
                 println(updatedGlidedRose.items.joinToString("\n"))
                 println()
