@@ -20,9 +20,11 @@ sealed interface Item {
     val sellingRequirement: SellingRequirement
     val quality: Quality
 
-    fun updateQuality(): Item
+    sealed interface UpdatableItem : Item {
+        fun updateQuality(): Item
+    }
 
-    data class RegularItem(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: DegradesWithAgeQuality) : Item {
+    data class RegularItem(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: DegradesWithAgeQuality) : UpdatableItem {
         override fun updateQuality(): Item {
             val numberOfDaysLeftToSell = sellingRequirement.decrease()
             val newQuality = quality.decrease(numberOfDaysLeftToSell)
@@ -32,7 +34,7 @@ sealed interface Item {
         override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 
-    data class AgedBrie(override val sellingRequirement: SellIn, override val quality: ImprovesWithAgeQuality) : Item {
+    data class AgedBrie(override val sellingRequirement: SellIn, override val quality: ImprovesWithAgeQuality) : UpdatableItem {
         override val name: ItemName = ItemName("Aged Brie")
 
         override fun updateQuality(): Item {
@@ -44,7 +46,7 @@ sealed interface Item {
         override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 
-    data class BackstagePass(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: BackstagePassQuality) : Item {
+    data class BackstagePass(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: BackstagePassQuality) : UpdatableItem {
         override fun updateQuality(): Item {
             val numberOfDaysLeftToSell = sellingRequirement.decrease()
             val newQuality = quality.update(numberOfDaysLeftToSell)
@@ -54,7 +56,7 @@ sealed interface Item {
         override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 
-    data class Conjured(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: ConjuredQuality) : Item {
+    data class Conjured(override val name: ItemName, override val sellingRequirement: SellIn, override val quality: ConjuredQuality) : UpdatableItem {
         override fun updateQuality(): Item {
             val numberOfDaysLeftToSell = sellingRequirement.decrease()
             val newQuality = quality.decrease(numberOfDaysLeftToSell)
@@ -67,7 +69,6 @@ sealed interface Item {
     data class Sulfuras(override val name: ItemName) : Item {
         override val sellingRequirement = NeverHasToBeSold
         override val quality: Quality = SulfurasQuality
-        override fun updateQuality(): Item = this
         override fun toString() = itemToString(name, sellingRequirement, quality)
     }
 }
