@@ -2,7 +2,7 @@
          
 ## Credits
 
-I've copied the skeleton code and the rest if the readme from [le0nidas](https://github.com/le0nidas/gilded-rose-kata-in-kotlin) repository.
+I've copied the skeleton code and the rest of the readme from [le0nidas](https://github.com/le0nidas/gilded-rose-kata-in-kotlin) repository.
 
 ## Intro
 
