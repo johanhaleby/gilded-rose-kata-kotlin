@@ -18,7 +18,7 @@ Print and add this on your wall:
 
 #### Source / Αttribution
 
-The original kata is written in C# by [@TerryHughes](https://twitter.com/TerryHughes) and [@NotMyself](https://twitter.com/NotMyself) and can be found at [https://github.com/NotMyself/se.haleby.gildedrose.acl.GildedRose](https://github.com/NotMyself/GildedRose).
+The original kata is written in C# by [@TerryHughes](https://twitter.com/TerryHughes) and [@NotMyself](https://twitter.com/NotMyself) and can be found at [https://github.com/NotMyself/GildedRose](https://github.com/NotMyself/GildedRose).
 
 ## Gilded Rose Refactoring Kata
 
