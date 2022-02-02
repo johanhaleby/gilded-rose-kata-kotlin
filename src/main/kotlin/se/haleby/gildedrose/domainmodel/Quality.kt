@@ -19,7 +19,7 @@ sealed interface Quality {
     }
 
     // We explicitly model this as its own data class since we want to make it impossible
-    // to construct Conjured items with a "DegradesWithAgeQuality" with the wrong "degarding factor".
+    // to construct Conjured items with a "DegradesWithAgeQuality" with the wrong "degrading factor".
     data class ConjuredQuality(override val value: QualityValue) : Quality {
         init {
             validateRegularQualityRequirements(value)
